@@ -112,7 +112,7 @@ def format_timestamp(timestamp: int) -> str:
 
 
 def build_html_report(jobs: list[dict[str, Any]]) -> None:
-    rows: list[str] = []
+    cards: list[str] = []
     for job in sorted(jobs, key=lambda job: job.get("first_seen", 0), reverse=True):
         title = html.escape(job["title"])
         url = html.escape(job["url"])
@@ -120,54 +120,239 @@ def build_html_report(jobs: list[dict[str, Any]]) -> None:
         first_seen = format_timestamp(job.get("first_seen", 0))
         message = f"New job found: {job['title']}\n{job['url']}"
         whatsapp_link = build_whatsapp_url(message)
-        rows.append(
+        cards.append(
             f"""
-            <tr>
-                <td><a href="{url}" target="_blank">{title}</a></td>
-                <td>{source}</td>
-                <td>{first_seen}</td>
-                <td><a class="button" href="{html.escape(whatsapp_link)}" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="{url}" target="_blank" class="job-title">{title}</a></h3>
+                    <span class="job-source">📌 {source}</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 {first_seen}</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="{html.escape(whatsapp_link)}" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             """
         )
 
-    if not rows:
-        rows_html = "<tr><td colspan=\"4\">No jobs found yet.</td></tr>"
+    if not cards:
+        cards_html = '<div class="empty-state"><p>🔍 No matching jobs found today. Check back later!</p></div>'
     else:
-        rows_html = "\n".join(rows)
+        cards_html = "\n".join(cards)
 
+    job_count = len(jobs)
     html_content = f"""
     <!DOCTYPE html>
-    <html lang=\"en\">
+    <html lang="en">
     <head>
-        <meta charset=\"UTF-8\">
-        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Job Search Report</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
         <style>
-            body {{ font-family: Arial, sans-serif; margin: 24px; }}
-            table {{ border-collapse: collapse; width: 100%; }}
-            th, td {{ border: 1px solid #ddd; padding: 10px; text-align: left; }}
-            th {{ background: #f4f4f4; }}
-            .button {{ display: inline-block; padding: 8px 12px; background: #25D366; color: white; text-decoration: none; border-radius: 5px; }}
-            .button:hover {{ background: #1ebe5d; }}
+            * {{
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }}
+            
+            body {{
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 40px 20px;
+            }}
+            
+            .container {{
+                max-width: 900px;
+                margin: 0 auto;
+            }}
+            
+            .header {{
+                text-align: center;
+                margin-bottom: 50px;
+                color: white;
+            }}
+            
+            .welcome-heading {{
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: #fff;
+                margin-bottom: 15px;
+                text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                letter-spacing: -0.5px;
+            }}
+            
+            .subtitle {{
+                font-size: 1.1rem;
+                color: rgba(255, 255, 255, 0.9);
+                font-weight: 400;
+                margin-bottom: 10px;
+            }}
+            
+            .job-count {{
+                display: inline-block;
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 50px;
+                font-size: 0.95rem;
+                font-weight: 500;
+                backdrop-filter: blur(10px);
+            }}
+            
+            .jobs-container {{
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                gap: 20px;
+                margin-bottom: 30px;
+            }}
+            
+            .job-card {{
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+                border-left: 5px solid #667eea;
+            }}
+            
+            .job-card:hover {{
+                transform: translateY(-5px);
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            }}
+            
+            .job-header {{
+                margin-bottom: 16px;
+            }}
+            
+            .job-title {{
+                color: #333;
+                text-decoration: none;
+                font-size: 1.2rem;
+                font-weight: 600;
+                margin: 0;
+                line-height: 1.4;
+                transition: color 0.2s;
+            }}
+            
+            .job-title:hover {{
+                color: #667eea;
+            }}
+            
+            .job-header h3 {{
+                margin: 0 0 10px 0;
+            }}
+            
+            .job-source {{
+                display: inline-block;
+                color: #666;
+                font-size: 0.9rem;
+                font-weight: 500;
+            }}
+            
+            .job-meta {{
+                display: flex;
+                gap: 15px;
+                margin-bottom: 16px;
+                padding-bottom: 16px;
+                border-bottom: 1px solid #f0f0f0;
+            }}
+            
+            .job-date {{
+                color: #999;
+                font-size: 0.85rem;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }}
+            
+            .job-actions {{
+                display: flex;
+                gap: 10px;
+            }}
+            
+            .whatsapp-btn {{
+                flex: 1;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                background: linear-gradient(135deg, #25D366 0%, #20ba5a 100%);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 0.95rem;
+                transition: all 0.3s ease;
+                border: none;
+                cursor: pointer;
+                box-shadow: 0 2px 10px rgba(37, 211, 102, 0.2);
+            }}
+            
+            .whatsapp-btn:hover {{
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            }}
+            
+            .whatsapp-btn:active {{
+                transform: translateY(0);
+            }}
+            
+            .empty-state {{
+                text-align: center;
+                padding: 60px 20px;
+                color: white;
+            }}
+            
+            .empty-state p {{
+                font-size: 1.3rem;
+                font-weight: 500;
+            }}
+            
+            .footer {{
+                text-align: center;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 0.9rem;
+                margin-top: 40px;
+            }}
+            
+            @media (max-width: 768px) {{
+                .welcome-heading {{
+                    font-size: 1.8rem;
+                }}
+                
+                .jobs-container {{
+                    grid-template-columns: 1fr;
+                }}
+            }}
         </style>
     </head>
     <body>
-        <h1>Job Search Report</h1>
-        <p>Open the link in a browser and click "Send" to share the vacancy via WhatsApp.</p>
-        <table>
-            <thead>
-                <tr>
-                    <th>Job Title</th>
-                    <th>Source Page</th>
-                    <th>First Seen</th>
-                    <th>Share</th>
-                </tr>
-            </thead>
-            <tbody>
-                {rows_html}
-            </tbody>
-        </table>
+        <div class="container">
+            <div class="header">
+                <h1 class="welcome-heading">💼 Job Opportunities</h1>
+                <p class="subtitle">Your daily job search companion</p>
+                <div class="job-count">
+                    Found <strong>{job_count}</strong> matching position{'s' if job_count != 1 else ''}
+                </div>
+            </div>
+            
+            <div class="jobs-container">
+                {cards_html}
+            </div>
+            
+            <div class="footer">
+                <p>✨ Last updated: {format_timestamp(int(time.time()))}</p>
+            </div>
+        </div>
     </body>
     </html>
     """

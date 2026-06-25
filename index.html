@@ -5,358 +5,982 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Job Search Report</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
         <style>
-            body { font-family: Arial, sans-serif; margin: 24px; }
-            table { border-collapse: collapse; width: 100%; }
-            th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-            th { background: #f4f4f4; }
-            .button { display: inline-block; padding: 8px 12px; background: #25D366; color: white; text-decoration: none; border-radius: 5px; }
-            .button:hover { background: #1ebe5d; }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
+            body {
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 40px 20px;
+            }
+            
+            .container {
+                max-width: 900px;
+                margin: 0 auto;
+            }
+            
+            .header {
+                text-align: center;
+                margin-bottom: 50px;
+                color: white;
+            }
+            
+            .welcome-heading {
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: #fff;
+                margin-bottom: 15px;
+                text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                letter-spacing: -0.5px;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+                color: rgba(255, 255, 255, 0.9);
+                font-weight: 400;
+                margin-bottom: 10px;
+            }
+            
+            .job-count {
+                display: inline-block;
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 50px;
+                font-size: 0.95rem;
+                font-weight: 500;
+                backdrop-filter: blur(10px);
+            }
+            
+            .jobs-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+            
+            .job-card {
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+                border-left: 5px solid #667eea;
+            }
+            
+            .job-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            }
+            
+            .job-header {
+                margin-bottom: 16px;
+            }
+            
+            .job-title {
+                color: #333;
+                text-decoration: none;
+                font-size: 1.2rem;
+                font-weight: 600;
+                margin: 0;
+                line-height: 1.4;
+                transition: color 0.2s;
+            }
+            
+            .job-title:hover {
+                color: #667eea;
+            }
+            
+            .job-header h3 {
+                margin: 0 0 10px 0;
+            }
+            
+            .job-source {
+                display: inline-block;
+                color: #666;
+                font-size: 0.9rem;
+                font-weight: 500;
+            }
+            
+            .job-meta {
+                display: flex;
+                gap: 15px;
+                margin-bottom: 16px;
+                padding-bottom: 16px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .job-date {
+                color: #999;
+                font-size: 0.85rem;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+            
+            .job-actions {
+                display: flex;
+                gap: 10px;
+            }
+            
+            .whatsapp-btn {
+                flex: 1;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                background: linear-gradient(135deg, #25D366 0%, #20ba5a 100%);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 0.95rem;
+                transition: all 0.3s ease;
+                border: none;
+                cursor: pointer;
+                box-shadow: 0 2px 10px rgba(37, 211, 102, 0.2);
+            }
+            
+            .whatsapp-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            }
+            
+            .whatsapp-btn:active {
+                transform: translateY(0);
+            }
+            
+            .empty-state {
+                text-align: center;
+                padding: 60px 20px;
+                color: white;
+            }
+            
+            .empty-state p {
+                font-size: 1.3rem;
+                font-weight: 500;
+            }
+            
+            .footer {
+                text-align: center;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 0.9rem;
+                margin-top: 40px;
+            }
+            
+            @media (max-width: 768px) {
+                .welcome-heading {
+                    font-size: 1.8rem;
+                }
+                
+                .jobs-container {
+                    grid-template-columns: 1fr;
+                }
+            }
         </style>
     </head>
     <body>
-        <h1>Job Search Report</h1>
-        <p>Open the link in a browser and click "Send" to share the vacancy via WhatsApp.</p>
-        <table>
-            <thead>
-                <tr>
-                    <th>Job Title</th>
-                    <th>Source Page</th>
-                    <th>First Seen</th>
-                    <th>Share</th>
-                </tr>
-            </thead>
-            <tbody>
+        <div class="container">
+            <div class="header">
+                <h1 class="welcome-heading">💼 Job Opportunities</h1>
+                <p class="subtitle">Your daily job search companion</p>
+                <div class="job-count">
+                    Found <strong>41</strong> matching positions
+                </div>
+            </div>
+            
+            <div class="jobs-container">
                 
-            <tr>
-                <td><a href="https://genexinfosys.com/position.php" target="_blank">Sr. iOS Developer</a></td>
-                <td>https://genexinfosys.com/position.php</td>
-                <td>2026-06-25 12:50:03</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Sr.+iOS+Developer%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://genexinfosys.com/position.php" target="_blank" class="job-title">Sr. iOS Developer</a></h3>
+                    <span class="job-source">📌 https://genexinfosys.com/position.php</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:18</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Sr.+iOS+Developer%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://genexinfosys.com/position.php" target="_blank">Sr.iOS Developer</a></td>
-                <td>https://genexinfosys.com/position.php</td>
-                <td>2026-06-25 12:50:03</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Sr.iOS+Developer%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://genexinfosys.com/position.php" target="_blank" class="job-title">Sr.iOS Developer</a></h3>
+                    <span class="job-source">📌 https://genexinfosys.com/position.php</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:18</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Sr.iOS+Developer%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://genexinfosys.com/position.php" target="_blank">Sr. DevOps Engineer</a></td>
-                <td>https://genexinfosys.com/position.php</td>
-                <td>2026-06-25 12:50:03</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Sr.+DevOps+Engineer%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://genexinfosys.com/position.php" target="_blank" class="job-title">Sr. DevOps Engineer</a></h3>
+                    <span class="job-source">📌 https://genexinfosys.com/position.php</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:18</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Sr.+DevOps+Engineer%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://genexinfosys.com/position.php" target="_blank">Software QA Engineer</a></td>
-                <td>https://genexinfosys.com/position.php</td>
-                <td>2026-06-25 12:50:03</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Software+QA+Engineer%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://genexinfosys.com/position.php" target="_blank" class="job-title">Software QA Engineer</a></h3>
+                    <span class="job-source">📌 https://genexinfosys.com/position.php</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:18</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Software+QA+Engineer%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://genexinfosys.com/position.php" target="_blank">Sr. PHP Developer</a></td>
-                <td>https://genexinfosys.com/position.php</td>
-                <td>2026-06-25 12:50:03</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Sr.+PHP+Developer%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://genexinfosys.com/position.php" target="_blank" class="job-title">Sr. PHP Developer</a></h3>
+                    <span class="job-source">📌 https://genexinfosys.com/position.php</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:18</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Sr.+PHP+Developer%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://genexinfosys.com/position.php" target="_blank">Lead/Sr. Software Engineer (JAVA)</a></td>
-                <td>https://genexinfosys.com/position.php</td>
-                <td>2026-06-25 12:50:03</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Lead%2FSr.+Software+Engineer+%28JAVA%29%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://genexinfosys.com/position.php" target="_blank" class="job-title">Lead/Sr. Software Engineer (JAVA)</a></h3>
+                    <span class="job-source">📌 https://genexinfosys.com/position.php</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:18</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Lead%2FSr.+Software+Engineer+%28JAVA%29%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://genexinfosys.com/position.php" target="_blank">Software Engineer (JAVA)</a></td>
-                <td>https://genexinfosys.com/position.php</td>
-                <td>2026-06-25 12:50:03</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Software+Engineer+%28JAVA%29%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://genexinfosys.com/position.php" target="_blank" class="job-title">Software Engineer (JAVA)</a></h3>
+                    <span class="job-source">📌 https://genexinfosys.com/position.php</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:18</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Software+Engineer+%28JAVA%29%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://genexinfosys.com/position.php" target="_blank">System Engineer</a></td>
-                <td>https://genexinfosys.com/position.php</td>
-                <td>2026-06-25 12:50:03</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+System+Engineer%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://genexinfosys.com/position.php" target="_blank" class="job-title">System Engineer</a></h3>
+                    <span class="job-source">📌 https://genexinfosys.com/position.php</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:18</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+System+Engineer%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://genexinfosys.com/position.php" target="_blank">System Engineer/ Sr. System Engineer (IVR Voice record Management)</a></td>
-                <td>https://genexinfosys.com/position.php</td>
-                <td>2026-06-25 12:50:03</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+System+Engineer%2F+Sr.+System+Engineer+%28IVR+Voice+record+Management%29%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://genexinfosys.com/position.php" target="_blank" class="job-title">System Engineer/ Sr. System Engineer (IVR Voice record Management)</a></h3>
+                    <span class="job-source">📌 https://genexinfosys.com/position.php</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:18</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+System+Engineer%2F+Sr.+System+Engineer+%28IVR+Voice+record+Management%29%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://genexinfosys.com/position.php" target="_blank">System Engineer/ Sr. System Engineer (IVR / IPCC Systems Management)</a></td>
-                <td>https://genexinfosys.com/position.php</td>
-                <td>2026-06-25 12:50:03</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+System+Engineer%2F+Sr.+System+Engineer+%28IVR+%2F+IPCC+Systems+Management%29%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://genexinfosys.com/position.php" target="_blank" class="job-title">System Engineer/ Sr. System Engineer (IVR / IPCC Systems Management)</a></h3>
+                    <span class="job-source">📌 https://genexinfosys.com/position.php</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:18</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+System+Engineer%2F+Sr.+System+Engineer+%28IVR+%2F+IPCC+Systems+Management%29%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://genexinfosys.com/position.php" target="_blank">Lead RPA Developer/RPA Developer</a></td>
-                <td>https://genexinfosys.com/position.php</td>
-                <td>2026-06-25 12:50:03</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Lead+RPA+Developer%2FRPA+Developer%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://genexinfosys.com/position.php" target="_blank" class="job-title">Lead RPA Developer/RPA Developer</a></h3>
+                    <span class="job-source">📌 https://genexinfosys.com/position.php</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:18</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Lead+RPA+Developer%2FRPA+Developer%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://genexinfosys.com/position.php" target="_blank">Front-End Developer (Angular and/or ReactJS Developers)</a></td>
-                <td>https://genexinfosys.com/position.php</td>
-                <td>2026-06-25 12:50:03</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Front-End+Developer+%28Angular+and%2For+ReactJS+Developers%29%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://genexinfosys.com/position.php" target="_blank" class="job-title">Front-End Developer (Angular and/or ReactJS Developers)</a></h3>
+                    <span class="job-source">📌 https://genexinfosys.com/position.php</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:18</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Front-End+Developer+%28Angular+and%2For+ReactJS+Developers%29%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://genexinfosys.com/position.php" target="_blank">Software QA Engineer (Automation &amp; Manual)</a></td>
-                <td>https://genexinfosys.com/position.php</td>
-                <td>2026-06-25 12:50:03</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Software+QA+Engineer+%28Automation+%26+Manual%29%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://genexinfosys.com/position.php" target="_blank" class="job-title">Software QA Engineer (Automation &amp; Manual)</a></h3>
+                    <span class="job-source">📌 https://genexinfosys.com/position.php</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:18</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Software+QA+Engineer+%28Automation+%26+Manual%29%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://genexinfosys.com/position.php" target="_blank">.Net Developer/Senior .Net Developer</a></td>
-                <td>https://genexinfosys.com/position.php</td>
-                <td>2026-06-25 12:50:03</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+.Net+Developer%2FSenior+.Net+Developer%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://genexinfosys.com/position.php" target="_blank" class="job-title">.Net Developer/Senior .Net Developer</a></h3>
+                    <span class="job-source">📌 https://genexinfosys.com/position.php</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:18</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+.Net+Developer%2FSenior+.Net+Developer%0Ahttps%3A%2F%2Fgenexinfosys.com%2Fposition.php" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://career.cefalo.com/job/fullstack-python-developer-lead-architect-35" target="_blank">Full-stack Python Developer (Lead / Architect) event 08 Mar 2026 Experienced in full-stack web application development using Python, Django, and related Python web frameworks &amp; libraries? We have a few open positions for you in the Tech Lead / Architect role.</a></td>
-                <td>https://career.cefalo.com/#jobshttps://enosisbd.pinpointhq.com/#js-careers-jobs-block</td>
-                <td>2026-06-25 12:50:01</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Full-stack+Python+Developer+%28Lead+%2F+Architect%29+event+08+Mar+2026+Experienced+in+full-stack+web+application+development+using+Python%2C+Django%2C+and+related+Python+web+frameworks+%26+libraries%3F+We+have+a+few+open+positions+for+you+in+the+Tech+Lead+%2F+Architect+role.%0Ahttps%3A%2F%2Fcareer.cefalo.com%2Fjob%2Ffullstack-python-developer-lead-architect-35" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://career.cefalo.com/job/fullstack-python-developer-lead-architect-35" target="_blank" class="job-title">Full-stack Python Developer (Lead / Architect) event 08 Mar 2026 Experienced in full-stack web application development using Python, Django, and related Python web frameworks &amp; libraries? We have a few open positions for you in the Tech Lead / Architect role.</a></h3>
+                    <span class="job-source">📌 https://career.cefalo.com/#jobshttps://enosisbd.pinpointhq.com/#js-careers-jobs-block</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:16</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Full-stack+Python+Developer+%28Lead+%2F+Architect%29+event+08+Mar+2026+Experienced+in+full-stack+web+application+development+using+Python%2C+Django%2C+and+related+Python+web+frameworks+%26+libraries%3F+We+have+a+few+open+positions+for+you+in+the+Tech+Lead+%2F+Architect+role.%0Ahttps%3A%2F%2Fcareer.cefalo.com%2Fjob%2Ffullstack-python-developer-lead-architect-35" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://career.cefalo.com/job/lead-c-hash-dot-net-developer-18" target="_blank">Lead C#/.NET Developer event 08 Mar 2026 Expert in enterprise-level backend application development using C#, .NET, ASP.NET Web API, and Entity Framework? We have open positions for you in Lead and Architect roles.</a></td>
-                <td>https://career.cefalo.com/#jobshttps://enosisbd.pinpointhq.com/#js-careers-jobs-block</td>
-                <td>2026-06-25 12:50:01</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Lead+C%23%2F.NET+Developer+event+08+Mar+2026+Expert+in+enterprise-level+backend+application+development+using+C%23%2C+.NET%2C+ASP.NET+Web+API%2C+and+Entity+Framework%3F+We+have+open+positions+for+you+in+Lead+and+Architect+roles.%0Ahttps%3A%2F%2Fcareer.cefalo.com%2Fjob%2Flead-c-hash-dot-net-developer-18" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://career.cefalo.com/job/lead-c-hash-dot-net-developer-18" target="_blank" class="job-title">Lead C#/.NET Developer event 08 Mar 2026 Expert in enterprise-level backend application development using C#, .NET, ASP.NET Web API, and Entity Framework? We have open positions for you in Lead and Architect roles.</a></h3>
+                    <span class="job-source">📌 https://career.cefalo.com/#jobshttps://enosisbd.pinpointhq.com/#js-careers-jobs-block</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:16</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Lead+C%23%2F.NET+Developer+event+08+Mar+2026+Expert+in+enterprise-level+backend+application+development+using+C%23%2C+.NET%2C+ASP.NET+Web+API%2C+and+Entity+Framework%3F+We+have+open+positions+for+you+in+Lead+and+Architect+roles.%0Ahttps%3A%2F%2Fcareer.cefalo.com%2Fjob%2Flead-c-hash-dot-net-developer-18" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://career.cefalo.com/#jobshttps://enosisbd.pinpointhq.com/#js-careers-jobs-block" target="_blank">Full-stack Python Developer (Lead / Architect)</a></td>
-                <td>https://career.cefalo.com/#jobshttps://enosisbd.pinpointhq.com/#js-careers-jobs-block</td>
-                <td>2026-06-25 12:50:01</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Full-stack+Python+Developer+%28Lead+%2F+Architect%29%0Ahttps%3A%2F%2Fcareer.cefalo.com%2F%23jobshttps%3A%2F%2Fenosisbd.pinpointhq.com%2F%23js-careers-jobs-block" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://career.cefalo.com/#jobshttps://enosisbd.pinpointhq.com/#js-careers-jobs-block" target="_blank" class="job-title">Full-stack Python Developer (Lead / Architect)</a></h3>
+                    <span class="job-source">📌 https://career.cefalo.com/#jobshttps://enosisbd.pinpointhq.com/#js-careers-jobs-block</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:16</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Full-stack+Python+Developer+%28Lead+%2F+Architect%29%0Ahttps%3A%2F%2Fcareer.cefalo.com%2F%23jobshttps%3A%2F%2Fenosisbd.pinpointhq.com%2F%23js-careers-jobs-block" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://career.cefalo.com/#jobshttps://enosisbd.pinpointhq.com/#js-careers-jobs-block" target="_blank">Lead C#/.NET Developer</a></td>
-                <td>https://career.cefalo.com/#jobshttps://enosisbd.pinpointhq.com/#js-careers-jobs-block</td>
-                <td>2026-06-25 12:50:01</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Lead+C%23%2F.NET+Developer%0Ahttps%3A%2F%2Fcareer.cefalo.com%2F%23jobshttps%3A%2F%2Fenosisbd.pinpointhq.com%2F%23js-careers-jobs-block" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://career.cefalo.com/#jobshttps://enosisbd.pinpointhq.com/#js-careers-jobs-block" target="_blank" class="job-title">Lead C#/.NET Developer</a></h3>
+                    <span class="job-source">📌 https://career.cefalo.com/#jobshttps://enosisbd.pinpointhq.com/#js-careers-jobs-block</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:16</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Lead+C%23%2F.NET+Developer%0Ahttps%3A%2F%2Fcareer.cefalo.com%2F%23jobshttps%3A%2F%2Fenosisbd.pinpointhq.com%2F%23js-careers-jobs-block" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://riseuplabs.com/jobs/net-developer/" target="_blank">.Net Developer</a></td>
-                <td>https://riseuplabs.com/jobs/</td>
-                <td>2026-06-25 12:49:58</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+.Net+Developer%0Ahttps%3A%2F%2Friseuplabs.com%2Fjobs%2Fnet-developer%2F" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://riseuplabs.com/jobs/net-developer/" target="_blank" class="job-title">.Net Developer</a></h3>
+                    <span class="job-source">📌 https://riseuplabs.com/jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:13</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+.Net+Developer%0Ahttps%3A%2F%2Friseuplabs.com%2Fjobs%2Fnet-developer%2F" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://riseuplabs.com/jobs/sr-level-full-stack-developer-nestjs-next-js/" target="_blank">Senior Full Stack Developer (NestJS + Next.js)</a></td>
-                <td>https://riseuplabs.com/jobs/</td>
-                <td>2026-06-25 12:49:58</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+Full+Stack+Developer+%28NestJS+%2B+Next.js%29%0Ahttps%3A%2F%2Friseuplabs.com%2Fjobs%2Fsr-level-full-stack-developer-nestjs-next-js%2F" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://riseuplabs.com/jobs/sr-level-full-stack-developer-nestjs-next-js/" target="_blank" class="job-title">Senior Full Stack Developer (NestJS + Next.js)</a></h3>
+                    <span class="job-source">📌 https://riseuplabs.com/jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:13</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+Full+Stack+Developer+%28NestJS+%2B+Next.js%29%0Ahttps%3A%2F%2Friseuplabs.com%2Fjobs%2Fsr-level-full-stack-developer-nestjs-next-js%2F" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://riseuplabs.com/jobs/unity-developer/" target="_blank">Senior Unity Developer</a></td>
-                <td>https://riseuplabs.com/jobs/</td>
-                <td>2026-06-25 12:49:58</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+Unity+Developer%0Ahttps%3A%2F%2Friseuplabs.com%2Fjobs%2Funity-developer%2F" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://riseuplabs.com/jobs/unity-developer/" target="_blank" class="job-title">Senior Unity Developer</a></h3>
+                    <span class="job-source">📌 https://riseuplabs.com/jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:13</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+Unity+Developer%0Ahttps%3A%2F%2Friseuplabs.com%2Fjobs%2Funity-developer%2F" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://riseuplabs.com/jobs/ai-engineer-mid-level/" target="_blank">AI Engineer</a></td>
-                <td>https://riseuplabs.com/jobs/</td>
-                <td>2026-06-25 12:49:58</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+AI+Engineer%0Ahttps%3A%2F%2Friseuplabs.com%2Fjobs%2Fai-engineer-mid-level%2F" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://riseuplabs.com/jobs/ai-engineer-mid-level/" target="_blank" class="job-title">AI Engineer</a></h3>
+                    <span class="job-source">📌 https://riseuplabs.com/jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:13</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+AI+Engineer%0Ahttps%3A%2F%2Friseuplabs.com%2Fjobs%2Fai-engineer-mid-level%2F" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://riseuplabs.com/jobs/senior-automation-engineer/" target="_blank">Senior QA Engineer (High-Scale Enterprise Systems)</a></td>
-                <td>https://riseuplabs.com/jobs/</td>
-                <td>2026-06-25 12:49:58</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+QA+Engineer+%28High-Scale+Enterprise+Systems%29%0Ahttps%3A%2F%2Friseuplabs.com%2Fjobs%2Fsenior-automation-engineer%2F" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://riseuplabs.com/jobs/senior-automation-engineer/" target="_blank" class="job-title">Senior QA Engineer (High-Scale Enterprise Systems)</a></h3>
+                    <span class="job-source">📌 https://riseuplabs.com/jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:13</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+QA+Engineer+%28High-Scale+Enterprise+Systems%29%0Ahttps%3A%2F%2Friseuplabs.com%2Fjobs%2Fsenior-automation-engineer%2F" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/qjlbwiylyd-data-engineer" target="_blank">Data Engineer</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Data+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Fqjlbwiylyd-data-engineer" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/qjlbwiylyd-data-engineer" target="_blank" class="job-title">Data Engineer</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Data+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Fqjlbwiylyd-data-engineer" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/senior-net-software-engineer" target="_blank">Senior .NET Software Engineer</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+.NET+Software+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Fsenior-net-software-engineer" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/senior-net-software-engineer" target="_blank" class="job-title">Senior .NET Software Engineer</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+.NET+Software+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Fsenior-net-software-engineer" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/associate-security-engineer" target="_blank">Associate Security Engineer</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Associate+Security+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Fassociate-security-engineer" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/associate-security-engineer" target="_blank" class="job-title">Associate Security Engineer</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Associate+Security+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Fassociate-security-engineer" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/senior-aiml-engineer" target="_blank">Senior AI/ML Engineer</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+AI%2FML+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Fsenior-aiml-engineer" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/senior-aiml-engineer" target="_blank" class="job-title">Senior AI/ML Engineer</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+AI%2FML+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Fsenior-aiml-engineer" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/senior-gen-ai-engineer" target="_blank">Senior Gen AI Engineer</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+Gen+AI+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Fsenior-gen-ai-engineer" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/senior-gen-ai-engineer" target="_blank" class="job-title">Senior Gen AI Engineer</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+Gen+AI+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Fsenior-gen-ai-engineer" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/glzmktkpoa-senior-java-developer" target="_blank">Senior Java Developer</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+Java+Developer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Fglzmktkpoa-senior-java-developer" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/glzmktkpoa-senior-java-developer" target="_blank" class="job-title">Senior Java Developer</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+Java+Developer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Fglzmktkpoa-senior-java-developer" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/oqwvmsgovd-node-js-developer" target="_blank">Node JS Developer</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Node+JS+Developer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Foqwvmsgovd-node-js-developer" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/oqwvmsgovd-node-js-developer" target="_blank" class="job-title">Node JS Developer</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Node+JS+Developer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Foqwvmsgovd-node-js-developer" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/principal-software-engineer-angular-spring-boot" target="_blank">Principal Software Engineer — Angular + Spring Boot</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Principal+Software+Engineer+%E2%80%94+Angular+%2B+Spring+Boot%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Fprincipal-software-engineer-angular-spring-boot" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/principal-software-engineer-angular-spring-boot" target="_blank" class="job-title">Principal Software Engineer — Angular + Spring Boot</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Principal+Software+Engineer+%E2%80%94+Angular+%2B+Spring+Boot%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Fprincipal-software-engineer-angular-spring-boot" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/soc-platform-security-engineer" target="_blank">SOC Platform &amp; Security Engineer</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+SOC+Platform+%26+Security+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Fsoc-platform-security-engineer" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/soc-platform-security-engineer" target="_blank" class="job-title">SOC Platform &amp; Security Engineer</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+SOC+Platform+%26+Security+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2Fsoc-platform-security-engineer" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/" target="_blank">Data Engineer</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Data+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/" target="_blank" class="job-title">Data Engineer</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Data+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/" target="_blank">Senior .NET Software Engineer</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+.NET+Software+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/" target="_blank" class="job-title">Senior .NET Software Engineer</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+.NET+Software+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/" target="_blank">Associate Security Engineer</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Associate+Security+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/" target="_blank" class="job-title">Associate Security Engineer</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Associate+Security+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/" target="_blank">Senior AI/ML Engineer</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+AI%2FML+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/" target="_blank" class="job-title">Senior AI/ML Engineer</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+AI%2FML+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/" target="_blank">Senior Gen AI Engineer</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+Gen+AI+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/" target="_blank" class="job-title">Senior Gen AI Engineer</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+Gen+AI+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/" target="_blank">Senior Java Developer</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+Java+Developer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/" target="_blank" class="job-title">Senior Java Developer</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Senior+Java+Developer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/" target="_blank">Node JS Developer</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Node+JS+Developer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/" target="_blank" class="job-title">Node JS Developer</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Node+JS+Developer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/" target="_blank">Principal Software Engineer — Angular + Spring Boot</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Principal+Software+Engineer+%E2%80%94+Angular+%2B+Spring+Boot%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/" target="_blank" class="job-title">Principal Software Engineer — Angular + Spring Boot</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+Principal+Software+Engineer+%E2%80%94+Angular+%2B+Spring+Boot%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
 
-            <tr>
-                <td><a href="https://brainstation-23.easy.jobs/" target="_blank">SOC Platform &amp; Security Engineer</a></td>
-                <td>https://brainstation-23.easy.jobs/</td>
-                <td>2026-06-25 12:49:54</td>
-                <td><a class="button" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+SOC+Platform+%26+Security+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">Send</a></td>
-            </tr>
+            <div class="job-card">
+                <div class="job-header">
+                    <h3><a href="https://brainstation-23.easy.jobs/" target="_blank" class="job-title">SOC Platform &amp; Security Engineer</a></h3>
+                    <span class="job-source">📌 https://brainstation-23.easy.jobs/</span>
+                </div>
+                <div class="job-meta">
+                    <span class="job-date">🕐 2026-06-25 13:33:06</span>
+                </div>
+                <div class="job-actions">
+                    <a class="whatsapp-btn" href="https://api.whatsapp.com/send?phone=+8801785210338&amp;text=New+job+found%3A+SOC+Platform+%26+Security+Engineer%0Ahttps%3A%2F%2Fbrainstation-23.easy.jobs%2F" target="_blank">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="display:inline;margin-right:5px;">
+                            <path d="M8 0C3.6 0 0 3.6 0 8c0 1.4.4 2.8 1.1 4L0 16l4.2-1.1C5.2 15.6 6.6 16 8 16c4.4 0 8-3.6 8-8S12.4 0 8 0zm4.5 11.4c-.2.6-1.2 1.1-2 1.3-.6.1-1.4.2-2.2-.2-.5-.2-1.1-.5-1.9-1-.3-.3-.6-.6-.8-.9-.2-.3-.4-.6-.5-1-.1-.4-.2-.8-.1-1.2.1-.4.5-.8.9-1.1.2-.2.4-.3.4-.5s0-.4-.1-.6c-.1-.2-.4-.5-.5-.6-.1-.1-.3-.2-.5-.1-.5.2-1 .5-1.3.9-.3.4-.4.9-.3 1.4.1 1 .5 1.9 1.2 2.6.7.7 1.6 1.1 2.6 1.2.5 0 1-.1 1.5-.3.5-.2.9-.5 1.2-.9.3-.4.4-1 .3-1.5z"/>
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
             
-            </tbody>
-        </table>
+            </div>
+            
+            <div class="footer">
+                <p>✨ Last updated: 2026-06-25 13:33:18</p>
+            </div>
+        </div>
     </body>
     </html>
     
